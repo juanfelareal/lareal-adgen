@@ -15,50 +15,67 @@
     }
     .app {
       display: flex;
-      height: 100vh;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    @media (min-width: 1024px) {
+      .app {
+        flex-direction: row;
+        height: 100vh;
+      }
     }
     .sidebar {
-      width: 400px;
       background: #1e293b;
-      padding: 24px;
+      padding: 20px;
       overflow-y: auto;
-      border-right: 1px solid #334155;
+      border-bottom: 1px solid #334155;
+    }
+    @media (min-width: 1024px) {
+      .sidebar {
+        width: 400px;
+        border-bottom: none;
+        border-right: 1px solid #334155;
+      }
     }
     .preview-area {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 20px;
       background: #0f172a;
+      min-height: 400px;
     }
     h1 {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 800;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
       color: #a3e635;
     }
+    @media (min-width: 1024px) {
+      h1 { font-size: 24px; margin-bottom: 8px; }
+    }
     .subtitle {
-      font-size: 14px;
+      font-size: 12px;
       color: #64748b;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
     .section {
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
     .section-title {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1px;
       color: #94a3b8;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     label {
       display: block;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 500;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       color: #cbd5e1;
     }
     input, textarea, select {
@@ -70,39 +87,37 @@
       color: #f8fafc;
       font-size: 14px;
       font-family: inherit;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     input:focus, textarea:focus, select:focus {
       outline: none;
       border-color: #a3e635;
     }
-    textarea { resize: vertical; min-height: 60px; }
+    textarea { resize: vertical; min-height: 50px; }
     .color-row {
       display: flex;
-      gap: 12px;
-      margin-bottom: 12px;
+      gap: 8px;
+      margin-bottom: 10px;
     }
-    .color-input {
-      flex: 1;
-    }
+    .color-input { flex: 1; }
     .color-input input[type="color"] {
       width: 100%;
-      height: 40px;
+      height: 36px;
       padding: 2px;
       cursor: pointer;
     }
     .templates-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
+      gap: 6px;
     }
     .template-card {
-      padding: 12px;
+      padding: 10px 8px;
       border-radius: 8px;
       border: 2px solid #334155;
       cursor: pointer;
       text-align: center;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       transition: all 0.2s;
     }
@@ -113,16 +128,16 @@
     }
     .theme-options {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
     }
     .theme-btn {
-      padding: 8px 16px;
+      padding: 8px 14px;
       border-radius: 20px;
       border: 2px solid #334155;
       background: transparent;
       color: #f8fafc;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
@@ -135,7 +150,7 @@
     .upload-area {
       border: 2px dashed #334155;
       border-radius: 12px;
-      padding: 24px;
+      padding: 20px;
       text-align: center;
       cursor: pointer;
       transition: all 0.2s;
@@ -144,22 +159,23 @@
     .upload-area.has-image {
       border-style: solid;
       border-color: #a3e635;
+      padding: 8px;
     }
-    .upload-icon { font-size: 32px; margin-bottom: 8px; }
-    .upload-text { font-size: 13px; color: #64748b; }
+    .upload-icon { font-size: 28px; margin-bottom: 6px; }
+    .upload-text { font-size: 12px; color: #64748b; }
     .upload-preview {
       max-width: 100%;
-      max-height: 150px;
+      max-height: 120px;
       border-radius: 8px;
     }
     .btn-generate {
       width: 100%;
-      padding: 16px;
+      padding: 14px;
       border-radius: 12px;
       border: none;
       background: #a3e635;
       color: #0f172a;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.2s;
@@ -167,59 +183,79 @@
     .btn-generate:hover { background: #84cc16; }
     .btn-download {
       width: 100%;
-      padding: 12px;
+      padding: 10px;
       border-radius: 8px;
       border: 2px solid #a3e635;
       background: transparent;
       color: #a3e635;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      margin-top: 12px;
+      margin-top: 10px;
     }
     .preview-frame {
-      width: 360px;
-      height: 640px;
-      border-radius: 16px;
+      width: 100%;
+      max-width: 270px;
+      aspect-ratio: 9/16;
+      border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 25px 80px rgba(0,0,0,0.5);
       background: #1e293b;
+    }
+    @media (min-width: 1024px) {
+      .preview-frame {
+        max-width: 360px;
+        border-radius: 16px;
+      }
     }
     .preview-frame iframe {
       width: 1080px;
       height: 1920px;
       border: none;
-      transform: scale(0.333);
       transform-origin: top left;
     }
     .preset-row {
       display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
+      gap: 6px;
+      margin-bottom: 10px;
     }
     .preset-row select { flex: 1; margin-bottom: 0; }
     .btn-save-preset {
-      padding: 8px 12px;
+      padding: 8px 10px;
       border-radius: 6px;
       border: 1px solid #334155;
       background: transparent;
       color: #94a3b8;
-      font-size: 12px;
+      font-size: 11px;
       cursor: pointer;
+      white-space: nowrap;
     }
     .btn-save-preset:hover { border-color: #a3e635; color: #a3e635; }
     #fileInput { display: none; }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .two-col > div { }
+    .two-col input, .two-col textarea { margin-bottom: 0; }
+    .info-text {
+      font-size: 10px;
+      color: #64748b;
+      margin-top: 8px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="sidebar">
       <h1>🎨 Ad Generator</h1>
-      <p class="subtitle">LA REAL · Generador de creativos estáticos</p>
+      <p class="subtitle">LA REAL · Creativos estáticos</p>
 
       <!-- Brand Preset -->
       <div class="section">
-        <div class="section-title">💾 Preset de Marca</div>
+        <div class="section-title">💾 Marca</div>
         <div class="preset-row">
           <select id="brandPreset">
             <option value="tranki">Tranki</option>
@@ -248,75 +284,80 @@
         </div>
       </div>
 
-      <!-- Template -->
+      <!-- Template & Theme -->
       <div class="section">
-        <div class="section-title">📐 Template</div>
-        <div class="templates-grid">
-          <div class="template-card active" data-template="screenshot" onclick="selectTemplate(this)">
-            📱 Screenshot
+        <div class="two-col">
+          <div>
+            <div class="section-title">📐 Template</div>
+            <div class="templates-grid">
+              <div class="template-card active" data-template="screenshot" onclick="selectTemplate(this)">📱 Screenshot</div>
+              <div class="template-card" data-template="hero" onclick="selectTemplate(this)">🦸 Hero</div>
+              <div class="template-card" data-template="minimal" onclick="selectTemplate(this)">✨ Minimal</div>
+              <div class="template-card" data-template="bold" onclick="selectTemplate(this)">💪 Bold</div>
+            </div>
           </div>
-          <div class="template-card" data-template="hero" onclick="selectTemplate(this)">
-            🦸 Hero Text
+          <div>
+            <div class="section-title">🌗 Theme</div>
+            <div class="theme-options">
+              <button class="theme-btn active" data-theme="dark" onclick="selectTheme(this)">Dark</button>
+              <button class="theme-btn" data-theme="light" onclick="selectTheme(this)">Light</button>
+              <button class="theme-btn" data-theme="accent" onclick="selectTheme(this)">Accent</button>
+            </div>
           </div>
-          <div class="template-card" data-template="minimal" onclick="selectTemplate(this)">
-            ✨ Minimal
-          </div>
-          <div class="template-card" data-template="bold" onclick="selectTemplate(this)">
-            💪 Bold CTA
-          </div>
-        </div>
-      </div>
-
-      <!-- Theme -->
-      <div class="section">
-        <div class="section-title">🌗 Theme</div>
-        <div class="theme-options">
-          <button class="theme-btn active" data-theme="dark" onclick="selectTheme(this)">Dark</button>
-          <button class="theme-btn" data-theme="light" onclick="selectTheme(this)">Light</button>
-          <button class="theme-btn" data-theme="accent" onclick="selectTheme(this)">Accent</button>
         </div>
       </div>
 
       <!-- Texts -->
       <div class="section">
         <div class="section-title">✏️ Textos</div>
-        <label>Chip (opcional)</label>
-        <input type="text" id="chipText" placeholder="EN 5 SEGUNDOS">
+        <div class="two-col" style="margin-bottom:10px">
+          <div>
+            <label>Chip (opcional)</label>
+            <input type="text" id="chipText" placeholder="EN 5 SEGUNDOS">
+          </div>
+          <div>
+            <label>Resaltar</label>
+            <input type="text" id="highlight" placeholder="claridad" value="claridad">
+          </div>
+        </div>
         
         <label>Headline</label>
         <textarea id="headline" placeholder="Tu headline aquí...">No te falta plata. Te falta claridad.</textarea>
         
-        <label>Palabra a resaltar</label>
-        <input type="text" id="highlight" placeholder="claridad" value="claridad">
-        
-        <label>Subline</label>
-        <input type="text" id="subline" placeholder="Subline aquí..." value="Ve tu mes completo en un solo lugar.">
-        
-        <label>CTA</label>
-        <input type="text" id="cta" placeholder="Empieza hoy" value="Empieza hoy">
+        <div class="two-col" style="margin-bottom:10px">
+          <div>
+            <label>Subline</label>
+            <input type="text" id="subline" value="Ve tu mes completo en un solo lugar.">
+          </div>
+          <div>
+            <label>CTA</label>
+            <input type="text" id="cta" value="Empieza hoy">
+          </div>
+        </div>
         
         <label>Microtext</label>
-        <input type="text" id="microtext" placeholder="Screenshot → IA → Tú revisas" value="Screenshot → IA → Tú revisas">
+        <input type="text" id="microtext" value="Screenshot → IA → Tú revisas">
       </div>
 
       <!-- Image Upload -->
       <div class="section">
-        <div class="section-title">🖼️ Imagen / Screenshot</div>
+        <div class="section-title">🖼️ Imagen</div>
         <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
           <div class="upload-icon">📤</div>
-          <div class="upload-text">Click para subir imagen</div>
+          <div class="upload-text">Toca para subir</div>
         </div>
         <input type="file" id="fileInput" accept="image/*" onchange="handleImageUpload(event)">
       </div>
 
       <!-- Generate -->
       <button class="btn-generate" onclick="generatePreview()">⚡ Generar Preview</button>
-      <button class="btn-download" onclick="downloadPNG()">📥 Descargar PNG 1080×1920</button>
+      <button class="btn-download" onclick="downloadInfo()">📥 Info para PNG 1080×1920</button>
+      <p class="info-text">Preview interactivo · Export PNG via servidor</p>
     </div>
 
     <div class="preview-area">
-      <div class="preview-frame">
-        <iframe id="previewFrame"></iframe>
+      <div class="preview-frame" id="previewFrame">
+        <iframe id="previewIframe"></iframe>
       </div>
     </div>
   </div>
@@ -327,23 +368,21 @@
     let currentTheme = 'dark';
 
     const presets = {
-      tranki: {
-        primary: '#0f172a',
-        accent: '#a3e635',
-        text: '#f8fafc'
-      }
+      tranki: { primary: '#0f172a', accent: '#a3e635', text: '#f8fafc' }
     };
 
     function selectTemplate(el) {
       document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
       el.classList.add('active');
       currentTemplate = el.dataset.template;
+      generatePreview();
     }
 
     function selectTheme(el) {
       document.querySelectorAll('.theme-btn').forEach(c => c.classList.remove('active'));
       el.classList.add('active');
       currentTheme = el.dataset.theme;
+      generatePreview();
     }
 
     function handleImageUpload(e) {
@@ -355,9 +394,17 @@
           const area = document.getElementById('uploadArea');
           area.classList.add('has-image');
           area.innerHTML = `<img src="${currentImage}" class="upload-preview">`;
+          generatePreview();
         };
         reader.readAsDataURL(file);
       }
+    }
+
+    function resizePreview() {
+      const frame = document.getElementById('previewFrame');
+      const iframe = document.getElementById('previewIframe');
+      const scale = frame.offsetWidth / 1080;
+      iframe.style.transform = `scale(${scale})`;
     }
 
     function generatePreview() {
@@ -371,13 +418,11 @@
       const cta = document.getElementById('cta').value;
       const microtext = document.getElementById('microtext').value;
 
-      // Build highlighted headline
       let headlineHtml = headline;
       if (highlight) {
-        headlineHtml = headline.replace(highlight, `<span style="color:${accent}">${highlight}</span>`);
+        headlineHtml = headline.replace(new RegExp(highlight, 'gi'), `<span style="color:${accent}">${highlight}</span>`);
       }
 
-      // Theme-based styles
       let bgStyle, textStyle, subtextStyle;
       if (currentTheme === 'dark') {
         bgStyle = primary;
@@ -476,12 +521,13 @@
         </html>
       `;
 
-      const frame = document.getElementById('previewFrame');
-      frame.srcdoc = html;
+      const iframe = document.getElementById('previewIframe');
+      iframe.srcdoc = html;
+      resizePreview();
     }
 
-    function downloadPNG() {
-      alert('Para descargar PNG exacto 1080x1920, usa el botón de exportar del servidor o corre el script de render con estos parámetros.');
+    function downloadInfo() {
+      alert('Para exportar PNG exacto 1080×1920:\\n\\n1. Usa el servidor de render (Elvis)\\n2. O captura desde desktop\\n\\nEste preview es solo para visualización.');
     }
 
     function savePreset() {
@@ -496,17 +542,22 @@
       }
     }
 
-    // Load preset on change
     document.getElementById('brandPreset').addEventListener('change', function() {
       const preset = presets[this.value];
       if (preset) {
         document.getElementById('colorPrimary').value = preset.primary;
         document.getElementById('colorAccent').value = preset.accent;
         document.getElementById('colorText').value = preset.text;
+        generatePreview();
       }
     });
 
-    // Initial preview
+    // Auto-generate on input change
+    document.querySelectorAll('input, textarea, select').forEach(el => {
+      el.addEventListener('input', generatePreview);
+    });
+
+    window.addEventListener('resize', resizePreview);
     generatePreview();
   </script>
 </body>
