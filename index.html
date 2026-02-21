@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LA REAL Ad Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+    }
+    .app {
+      display: flex;
+      height: 100vh;
+    }
+    .sidebar {
+      width: 400px;
+      background: #1e293b;
+      padding: 24px;
+      overflow-y: auto;
+      border-right: 1px solid #334155;
+    }
+    .preview-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: #0f172a;
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: #a3e635;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 24px;
+    }
+    .section {
+      margin-bottom: 24px;
+    }
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #94a3b8;
+      margin-bottom: 12px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #cbd5e1;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: #f8fafc;
+      font-size: 14px;
+      font-family: inherit;
+      margin-bottom: 12px;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #a3e635;
+    }
+    textarea { resize: vertical; min-height: 60px; }
+    .color-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .color-input {
+      flex: 1;
+    }
+    .color-input input[type="color"] {
+      width: 100%;
+      height: 40px;
+      padding: 2px;
+      cursor: pointer;
+    }
+    .templates-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .template-card {
+      padding: 12px;
+      border-radius: 8px;
+      border: 2px solid #334155;
+      cursor: pointer;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .template-card:hover { border-color: #64748b; }
+    .template-card.active {
+      border-color: #a3e635;
+      background: rgba(163, 230, 53, 0.1);
+    }
+    .theme-options {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .theme-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 2px solid #334155;
+      background: transparent;
+      color: #f8fafc;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .theme-btn:hover { border-color: #64748b; }
+    .theme-btn.active {
+      border-color: #a3e635;
+      background: rgba(163, 230, 53, 0.1);
+    }
+    .upload-area {
+      border: 2px dashed #334155;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .upload-area:hover { border-color: #a3e635; }
+    .upload-area.has-image {
+      border-style: solid;
+      border-color: #a3e635;
+    }
+    .upload-icon { font-size: 32px; margin-bottom: 8px; }
+    .upload-text { font-size: 13px; color: #64748b; }
+    .upload-preview {
+      max-width: 100%;
+      max-height: 150px;
+      border-radius: 8px;
+    }
+    .btn-generate {
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      border: none;
+      background: #a3e635;
+      color: #0f172a;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-generate:hover { background: #84cc16; }
+    .btn-download {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 2px solid #a3e635;
+      background: transparent;
+      color: #a3e635;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+    .preview-frame {
+      width: 360px;
+      height: 640px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.5);
+      background: #1e293b;
+    }
+    .preview-frame iframe {
+      width: 1080px;
+      height: 1920px;
+      border: none;
+      transform: scale(0.333);
+      transform-origin: top left;
+    }
+    .preset-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .preset-row select { flex: 1; margin-bottom: 0; }
+    .btn-save-preset {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      background: transparent;
+      color: #94a3b8;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .btn-save-preset:hover { border-color: #a3e635; color: #a3e635; }
+    #fileInput { display: none; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="sidebar">
+      <h1>🎨 Ad Generator</h1>
+      <p class="subtitle">LA REAL · Generador de creativos estáticos</p>
+
+      <!-- Brand Preset -->
+      <div class="section">
+        <div class="section-title">💾 Preset de Marca</div>
+        <div class="preset-row">
+          <select id="brandPreset">
+            <option value="tranki">Tranki</option>
+            <option value="custom">Personalizado</option>
+          </select>
+          <button class="btn-save-preset" onclick="savePreset()">Guardar</button>
+        </div>
+      </div>
+
+      <!-- Colors -->
+      <div class="section">
+        <div class="section-title">🎨 Colores</div>
+        <div class="color-row">
+          <div class="color-input">
+            <label>Primario</label>
+            <input type="color" id="colorPrimary" value="#0f172a">
+          </div>
+          <div class="color-input">
+            <label>Acento</label>
+            <input type="color" id="colorAccent" value="#a3e635">
+          </div>
+          <div class="color-input">
+            <label>Texto</label>
+            <input type="color" id="colorText" value="#f8fafc">
+          </div>
+        </div>
+      </div>
+
+      <!-- Template -->
+      <div class="section">
+        <div class="section-title">📐 Template</div>
+        <div class="templates-grid">
+          <div class="template-card active" data-template="screenshot" onclick="selectTemplate(this)">
+            📱 Screenshot
+          </div>
+          <div class="template-card" data-template="hero" onclick="selectTemplate(this)">
+            🦸 Hero Text
+          </div>
+          <div class="template-card" data-template="minimal" onclick="selectTemplate(this)">
+            ✨ Minimal
+          </div>
+          <div class="template-card" data-template="bold" onclick="selectTemplate(this)">
+            💪 Bold CTA
+          </div>
+        </div>
+      </div>
+
+      <!-- Theme -->
+      <div class="section">
+        <div class="section-title">🌗 Theme</div>
+        <div class="theme-options">
+          <button class="theme-btn active" data-theme="dark" onclick="selectTheme(this)">Dark</button>
+          <button class="theme-btn" data-theme="light" onclick="selectTheme(this)">Light</button>
+          <button class="theme-btn" data-theme="accent" onclick="selectTheme(this)">Accent</button>
+        </div>
+      </div>
+
+      <!-- Texts -->
+      <div class="section">
+        <div class="section-title">✏️ Textos</div>
+        <label>Chip (opcional)</label>
+        <input type="text" id="chipText" placeholder="EN 5 SEGUNDOS">
+        
+        <label>Headline</label>
+        <textarea id="headline" placeholder="Tu headline aquí...">No te falta plata. Te falta claridad.</textarea>
+        
+        <label>Palabra a resaltar</label>
+        <input type="text" id="highlight" placeholder="claridad" value="claridad">
+        
+        <label>Subline</label>
+        <input type="text" id="subline" placeholder="Subline aquí..." value="Ve tu mes completo en un solo lugar.">
+        
+        <label>CTA</label>
+        <input type="text" id="cta" placeholder="Empieza hoy" value="Empieza hoy">
+        
+        <label>Microtext</label>
+        <input type="text" id="microtext" placeholder="Screenshot → IA → Tú revisas" value="Screenshot → IA → Tú revisas">
+      </div>
+
+      <!-- Image Upload -->
+      <div class="section">
+        <div class="section-title">🖼️ Imagen / Screenshot</div>
+        <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+          <div class="upload-icon">📤</div>
+          <div class="upload-text">Click para subir imagen</div>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" onchange="handleImageUpload(event)">
+      </div>
+
+      <!-- Generate -->
+      <button class="btn-generate" onclick="generatePreview()">⚡ Generar Preview</button>
+      <button class="btn-download" onclick="downloadPNG()">📥 Descargar PNG 1080×1920</button>
+    </div>
+
+    <div class="preview-area">
+      <div class="preview-frame">
+        <iframe id="previewFrame"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentImage = null;
+    let currentTemplate = 'screenshot';
+    let currentTheme = 'dark';
+
+    const presets = {
+      tranki: {
+        primary: '#0f172a',
+        accent: '#a3e635',
+        text: '#f8fafc'
+      }
+    };
+
+    function selectTemplate(el) {
+      document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      currentTemplate = el.dataset.template;
+    }
+
+    function selectTheme(el) {
+      document.querySelectorAll('.theme-btn').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      currentTheme = el.dataset.theme;
+    }
+
+    function handleImageUpload(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          currentImage = event.target.result;
+          const area = document.getElementById('uploadArea');
+          area.classList.add('has-image');
+          area.innerHTML = `<img src="${currentImage}" class="upload-preview">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function generatePreview() {
+      const primary = document.getElementById('colorPrimary').value;
+      const accent = document.getElementById('colorAccent').value;
+      const textColor = document.getElementById('colorText').value;
+      const chip = document.getElementById('chipText').value;
+      const headline = document.getElementById('headline').value;
+      const highlight = document.getElementById('highlight').value;
+      const subline = document.getElementById('subline').value;
+      const cta = document.getElementById('cta').value;
+      const microtext = document.getElementById('microtext').value;
+
+      // Build highlighted headline
+      let headlineHtml = headline;
+      if (highlight) {
+        headlineHtml = headline.replace(highlight, `<span style="color:${accent}">${highlight}</span>`);
+      }
+
+      // Theme-based styles
+      let bgStyle, textStyle, subtextStyle;
+      if (currentTheme === 'dark') {
+        bgStyle = primary;
+        textStyle = textColor;
+        subtextStyle = '#94a3b8';
+      } else if (currentTheme === 'light') {
+        bgStyle = '#f8fafc';
+        textStyle = primary;
+        subtextStyle = '#475569';
+      } else {
+        bgStyle = `linear-gradient(180deg, #ecfccb 0%, #f8fafc 100%)`;
+        textStyle = primary;
+        subtextStyle = '#475569';
+      }
+
+      const html = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+          <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body {
+              font-family: 'Inter', sans-serif;
+              width: 1080px;
+              height: 1920px;
+              background: ${bgStyle};
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              padding: 50px;
+            }
+            .chip {
+              background: ${accent};
+              color: ${primary};
+              padding: 10px 24px;
+              border-radius: 30px;
+              font-size: 18px;
+              font-weight: 700;
+              margin-bottom: 24px;
+              letter-spacing: 1px;
+              display: ${chip ? 'block' : 'none'};
+            }
+            .headline {
+              font-size: 46px;
+              font-weight: 800;
+              color: ${textStyle};
+              text-align: center;
+              line-height: 1.15;
+              max-width: 900px;
+            }
+            .subline {
+              margin-top: 16px;
+              font-size: 22px;
+              color: ${subtextStyle};
+              text-align: center;
+            }
+            .screenshot {
+              margin-top: 30px;
+              width: 720px;
+              border-radius: 16px;
+              overflow: hidden;
+              box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+              border: 1px solid rgba(0,0,0,0.1);
+            }
+            .screenshot img {
+              width: 100%;
+              display: block;
+            }
+            .cta {
+              margin-top: 30px;
+              background: ${accent};
+              color: ${primary};
+              padding: 16px 50px;
+              border-radius: 50px;
+              font-size: 26px;
+              font-weight: 700;
+            }
+            .microtext {
+              margin-top: 18px;
+              font-size: 16px;
+              color: ${subtextStyle};
+              letter-spacing: 1px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="chip">${chip}</div>
+          <div class="headline">${headlineHtml}</div>
+          <div class="subline">${subline}</div>
+          ${currentImage ? `<div class="screenshot"><img src="${currentImage}"></div>` : ''}
+          <div class="cta">${cta}</div>
+          <div class="microtext">${microtext}</div>
+        </body>
+        </html>
+      `;
+
+      const frame = document.getElementById('previewFrame');
+      frame.srcdoc = html;
+    }
+
+    function downloadPNG() {
+      alert('Para descargar PNG exacto 1080x1920, usa el botón de exportar del servidor o corre el script de render con estos parámetros.');
+    }
+
+    function savePreset() {
+      const name = prompt('Nombre del preset:');
+      if (name) {
+        presets[name.toLowerCase()] = {
+          primary: document.getElementById('colorPrimary').value,
+          accent: document.getElementById('colorAccent').value,
+          text: document.getElementById('colorText').value
+        };
+        alert('Preset guardado: ' + name);
+      }
+    }
+
+    // Load preset on change
+    document.getElementById('brandPreset').addEventListener('change', function() {
+      const preset = presets[this.value];
+      if (preset) {
+        document.getElementById('colorPrimary').value = preset.primary;
+        document.getElementById('colorAccent').value = preset.accent;
+        document.getElementById('colorText').value = preset.text;
+      }
+    });
+
+    // Initial preview
+    generatePreview();
+  </script>
+</body>
+</html>
