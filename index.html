@@ -3927,9 +3927,24 @@
         }
 
         document.addEventListener('keydown', function(e){
-          if(!inlineEditing) return;
-          if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); finishInlineEdit(); }
-          if(e.key === 'Escape'){ e.preventDefault(); finishInlineEdit(); }
+          if(inlineEditing){
+            if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); finishInlineEdit(); }
+            if(e.key === 'Escape'){ e.preventDefault(); finishInlineEdit(); }
+            return;
+          }
+          // Delete/Backspace removes selected added elements
+          if((e.key === 'Delete' || e.key === 'Backspace') && selected.size > 0){
+            e.preventDefault();
+            var ids = [];
+            selected.forEach(function(el){
+              var id = el.dataset.drag;
+              if(id && id.startsWith('el-')) ids.push(id);
+            });
+            if(ids.length > 0){
+              parent.postMessage({type:'delete-elements', ids:ids},'*');
+              clearSel();
+            }
+          }
         });
 
         // Prevent drag on elements being edited
@@ -7206,6 +7221,16 @@ ${dragScript}
             posY: e.data.posY,
             zoom: e.data.zoom
           };
+        }
+        // Delete selected added elements
+        if (e.data && e.data.type === 'delete-elements') {
+          const ids = e.data.ids || [];
+          if (ids.length > 0 && addedElements[currentType]) {
+            pushUndo();
+            addedElements[currentType] = addedElements[currentType].filter(el => !ids.includes(el.id));
+            generatePreview();
+            renderElementsList();
+          }
         }
         // Double-click on any element → determine type and act accordingly
         if (e.data && e.data.type === 'dblclick-field') {
