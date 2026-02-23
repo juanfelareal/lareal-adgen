@@ -1990,8 +1990,11 @@
     // 0. UI THEME TOGGLE
     // ========================================
     (function() {
-      const saved = localStorage.getItem('ui-theme') || 'light';
+      // Always start in light mode on fresh load; only restore dark if explicitly toggled in this session
+      const saved = localStorage.getItem('ui-theme');
       if (saved === 'dark') document.documentElement.setAttribute('data-ui-theme', 'dark');
+      else document.documentElement.removeAttribute('data-ui-theme');
+      localStorage.setItem('ui-theme', 'light');
     })();
 
     function toggleUITheme() {
