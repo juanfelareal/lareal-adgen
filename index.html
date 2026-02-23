@@ -2590,6 +2590,7 @@
     let globalTypo = { headline: 46, subcopy: 18, body: 16, detail: 13, cta: 18 };
     let elementOffsets = {};
     let elementScales = {};
+    let hiddenElements = {}; // hiddenElements[typeId] = Set of dragIds to hide
     let globalAlign = { h: 'center', v: 'center' };
     let showSafezone = false;
 
@@ -2601,6 +2602,11 @@
 
     function captureSnapshot() {
       // Capture only serializable state (not images — those are by reference in imageStore)
+      // Serialize hiddenElements (Sets → Arrays)
+      const hiddenSerialized = {};
+      for (const [k, v] of Object.entries(hiddenElements)) {
+        hiddenSerialized[k] = Array.from(v);
+      }
       return JSON.stringify({
         type: currentType,
         theme: currentTheme,
@@ -2611,6 +2617,7 @@
         scales: JSON.parse(JSON.stringify(elementScales)),
         crops: JSON.parse(JSON.stringify(imageCrops)),
         addedElements: JSON.parse(JSON.stringify(addedElements)),
+        hidden: hiddenSerialized,
         fieldValues: collectFieldValuesRaw()
       });
     }
@@ -2684,6 +2691,13 @@
       elementScales = JSON.parse(JSON.stringify(snap.scales));
       imageCrops = JSON.parse(JSON.stringify(snap.crops));
       if (snap.addedElements) addedElements = JSON.parse(JSON.stringify(snap.addedElements));
+      // Restore hiddenElements (Arrays → Sets)
+      hiddenElements = {};
+      if (snap.hidden) {
+        for (const [k, v] of Object.entries(snap.hidden)) {
+          hiddenElements[k] = new Set(v);
+        }
+      }
       renderElementsList();
       // Restore field values
       const config = AD_TYPES[currentType];
@@ -3069,10 +3083,16 @@
       return typeScales[elementId];
     }
 
+    function isElementHidden(id) {
+      const set = hiddenElements[currentType];
+      return set && set.has(id);
+    }
+
     function dragAttr(id) {
       const o = getOffsets(id);
       const s = getScale(id);
-      return `data-drag="${id}" data-ox="${o.x}" data-oy="${o.y}" data-scale="${s}"`;
+      const hidden = isElementHidden(id) ? ' data-hidden="true"' : '';
+      return `data-drag="${id}" data-ox="${o.x}" data-oy="${o.y}" data-scale="${s}"${hidden}`;
     }
 
     function dragStyle(id) {
@@ -3932,13 +3952,13 @@
             if(e.key === 'Escape'){ e.preventDefault(); finishInlineEdit(); }
             return;
           }
-          // Delete/Backspace removes selected added elements
+          // Delete/Backspace removes selected elements
           if((e.key === 'Delete' || e.key === 'Backspace') && selected.size > 0){
             e.preventDefault();
             var ids = [];
             selected.forEach(function(el){
               var id = el.dataset.drag;
-              if(id && id.startsWith('el-')) ids.push(id);
+              if(id) ids.push(id);
             });
             if(ids.length > 0){
               parent.postMessage({type:'delete-elements', ids:ids},'*');
@@ -4717,6 +4737,7 @@ ${dragScript}
         padding: 60px; position: relative;
       }
       .ad img { max-width: 100%; display: block; }
+      .ad [data-hidden="true"] { display: none !important; }
       .ad-tag {
         display: inline-block; padding: 8px 20px;
         border-radius: 50px; font-size: ${t.detail}px;
@@ -7222,15 +7243,28 @@ ${dragScript}
             zoom: e.data.zoom
           };
         }
-        // Delete selected added elements
+        // Delete selected elements (added + template)
         if (e.data && e.data.type === 'delete-elements') {
           const ids = e.data.ids || [];
-          if (ids.length > 0 && addedElements[currentType]) {
-            pushUndo();
-            addedElements[currentType] = addedElements[currentType].filter(el => !ids.includes(el.id));
-            generatePreview();
+          if (ids.length === 0) return;
+          pushUndo();
+          const addedIds = [];
+          const templateIds = [];
+          ids.forEach(id => {
+            if (id.startsWith('el-')) addedIds.push(id);
+            else templateIds.push(id);
+          });
+          // Remove added elements
+          if (addedIds.length > 0 && addedElements[currentType]) {
+            addedElements[currentType] = addedElements[currentType].filter(el => !addedIds.includes(el.id));
             renderElementsList();
           }
+          // Hide template elements
+          if (templateIds.length > 0) {
+            if (!hiddenElements[currentType]) hiddenElements[currentType] = new Set();
+            templateIds.forEach(id => hiddenElements[currentType].add(id));
+          }
+          generatePreview();
         }
         // Double-click on any element → determine type and act accordingly
         if (e.data && e.data.type === 'dblclick-field') {
