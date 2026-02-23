@@ -2832,7 +2832,7 @@
       const ox = el.offset?.x || 0;
       const oy = el.offset?.y || 0;
       const sc = el.scale || 1;
-      const baseStyle = `position:absolute;left:${ox}px;top:${oy}px;transform:scale(${sc});transform-origin:center center;cursor:grab;user-select:none;z-index:10;`;
+      const baseStyle = `position:absolute;left:0;top:0;transform:translate(${ox}px,${oy}px) scale(${sc});transform-origin:center center;cursor:grab;user-select:none;z-index:10;`;
 
       switch (el.type) {
         case 'heading':
@@ -2886,7 +2886,17 @@
     function renderAddedElementsHTML(palette, dims) {
       const list = getAddedElements();
       if (list.length === 0) return '';
-      return list.map(el => renderSingleElement(el, palette, dims)).join('');
+      // Scale element positions proportionally when rendering at a different aspect ratio
+      const baseDims = getCanvasDims();
+      const scaleX = dims.w / baseDims.w;
+      const scaleY = dims.h / baseDims.h;
+      if (Math.abs(scaleX - 1) < 0.001 && Math.abs(scaleY - 1) < 0.001) {
+        return list.map(el => renderSingleElement(el, palette, dims)).join('');
+      }
+      return list.map(el => {
+        const scaled = { ...el, offset: { x: (el.offset?.x || 0) * scaleX, y: (el.offset?.y || 0) * scaleY } };
+        return renderSingleElement(scaled, palette, dims);
+      }).join('');
     }
 
     function buildElementsPanel() {
@@ -4685,8 +4695,8 @@ ${dragScript}
         </div>
       </div>`;
 
-      const leftHTML = left.map((f, i) => featureCard(f, i * 2 + 1)).join('');
-      const rightHTML = right.map((f, i) => featureCard(f, i * 2 + 2)).join('');
+      const leftHTML = left.map((f, i) => featureCard(f, i * 2)).join('');
+      const rightHTML = right.map((f, i) => featureCard(f, i * 2 + 1)).join('');
 
       return {
         styles: baseCSS(p, dims, globalAlign, typo),
