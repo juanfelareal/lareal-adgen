@@ -2749,6 +2749,8 @@
       'cta-button':  { name: 'Botón CTA', category: 'texto', icon: '▣', defaultConfig: { text: 'Comprar ahora', fontSize: 18, fontWeight: 700, bg: 'accent', color: 'accentText', borderRadius: 50, paddingH: 40, paddingV: 14 } },
       'badge-pill':  { name: 'Badge', category: 'texto', icon: '●', defaultConfig: { text: 'NUEVO', fontSize: 13, fontWeight: 700, bg: 'accent', color: 'accentText', uppercase: true, borderRadius: 50, paddingH: 16, paddingV: 6 } },
       'price-tag':   { name: 'Precio', category: 'texto', icon: '$', defaultConfig: { price: '$99.900', originalPrice: '$149.900', showStrike: true, fontSize: 36, color: 'text' } },
+      // --- Media ---
+      'image-box':    { name: 'Imagen', category: 'media', icon: '🖼', defaultConfig: { src: '', width: 200, height: 200, borderRadius: 12, opacity: 1, fit: 'cover' } },
       // --- Formas ---
       'shape-rect':   { name: 'Rectángulo', category: 'formas', icon: '□', defaultConfig: { width: 200, height: 100, bg: 'accent', borderRadius: 16, opacity: 1 } },
       'shape-circle': { name: 'Círculo', category: 'formas', icon: '○', defaultConfig: { size: 100, bg: 'accent', opacity: 1 } },
@@ -2761,6 +2763,7 @@
 
     const ELEMENT_CATEGORIES = {
       'texto': 'Texto',
+      'media': 'Media',
       'formas': 'Formas',
       'deco': 'Decorativo'
     };
@@ -2811,6 +2814,17 @@
       generatePreview();
     }
 
+    function handleElementImage(elId, input) {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        updateElementConfig(elId, 'src', e.target.result);
+        renderElementsList();
+      };
+      reader.readAsDataURL(file);
+    }
+
     function resolveElementColor(colorKey, palette) {
       const map = {
         'text': palette.text,
@@ -2853,6 +2867,13 @@
           }
           html += `<span style="font-weight:900;font-size:${c.fontSize}px;">${c.price}</span>`;
           return `<div data-drag="${elId}" data-ox="${ox}" data-oy="${oy}" data-scale="${sc}" style="${baseStyle}color:${resolveElementColor(c.color, palette)};display:flex;align-items:baseline;gap:4px;">${html}</div>`;
+        }
+
+        case 'image-box': {
+          const imgContent = c.src
+            ? `<img src="${c.src}" style="width:100%;height:100%;object-fit:${c.fit || 'cover'};border-radius:${c.borderRadius}px;">`
+            : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:${palette.cardBg || 'rgba(128,128,128,0.15)'};border:2px dashed ${palette.textMuted || '#999'};border-radius:${c.borderRadius}px;font-size:32px;opacity:0.5;">🖼</div>`;
+          return `<div data-drag="${elId}" data-ox="${ox}" data-oy="${oy}" data-scale="${sc}" style="${baseStyle}width:${c.width}px;height:${c.height}px;border-radius:${c.borderRadius}px;opacity:${c.opacity};overflow:hidden;">${imgContent}</div>`;
         }
 
         case 'shape-rect':
@@ -2955,6 +2976,20 @@
         html += `<label>Precio</label><input type="text" value="${c.price || ''}" oninput="updateElementConfig('${el.id}','price',this.value)">`;
         html += `<label>Precio original</label><input type="text" value="${c.originalPrice || ''}" oninput="updateElementConfig('${el.id}','originalPrice',this.value)">`;
         html += `<label>Tamaño</label><input type="number" value="${c.fontSize}" min="12" max="120" oninput="updateElementConfig('${el.id}','fontSize',+this.value)">`;
+      }
+      if (type === 'image-box') {
+        html += `<label>Imagen</label>
+          <div class="upload-area" style="padding:8px;margin-bottom:8px;cursor:pointer;" onclick="document.getElementById('elimg-${el.id}').click()">
+            ${c.src ? `<img src="${c.src}" style="width:100%;max-height:80px;object-fit:cover;border-radius:8px;">` : '<div style="text-align:center;padding:8px;opacity:0.5;font-size:12px;">Click para subir</div>'}
+          </div>
+          <input type="file" id="elimg-${el.id}" accept="image/*" style="display:none" onchange="handleElementImage('${el.id}',this)">`;
+        if (c.src) {
+          html += `<button style="width:100%;padding:6px;margin-bottom:8px;font-size:11px;cursor:pointer;border:1px solid var(--ui-border);border-radius:8px;background:var(--ui-input-bg);color:var(--ui-text);" onclick="updateElementConfig('${el.id}','src','');generatePreview();renderElementsList();">Quitar imagen</button>`;
+        }
+        html += `<label>Ancho</label><input type="number" value="${c.width}" min="20" max="1000" oninput="updateElementConfig('${el.id}','width',+this.value)">`;
+        html += `<label>Alto</label><input type="number" value="${c.height}" min="20" max="1000" oninput="updateElementConfig('${el.id}','height',+this.value)">`;
+        html += `<label>Border radius</label><input type="number" value="${c.borderRadius}" min="0" max="200" oninput="updateElementConfig('${el.id}','borderRadius',+this.value)">`;
+        html += `<label>Opacidad</label><input type="number" value="${c.opacity}" min="0.05" max="1" step="0.05" oninput="updateElementConfig('${el.id}','opacity',+this.value)">`;
       }
       if (['shape-rect', 'divider-line'].includes(type)) {
         html += `<label>Ancho</label><input type="number" value="${c.width}" min="10" max="1000" oninput="updateElementConfig('${el.id}','width',+this.value)">`;
