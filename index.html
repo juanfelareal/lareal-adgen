@@ -7210,6 +7210,25 @@ ${dragScript}
         // Double-click on any element → determine type and act accordingly
         if (e.data && e.data.type === 'dblclick-field') {
           const dragId = e.data.id;
+
+          // Check if this is an added element first
+          const addedList = addedElements[currentType] || [];
+          const addedEl = addedList.find(el => el.id === dragId);
+          if (addedEl) {
+            const textTypes = ['heading', 'subheading', 'body-text', 'cta-button', 'badge-pill', 'price-tag'];
+            if (textTypes.includes(addedEl.type)) {
+              const iframe = document.getElementById('previewIframe');
+              if (iframe && iframe.contentWindow) {
+                iframe.contentWindow.postMessage({ type: 'start-inline-edit', id: dragId }, '*');
+              }
+            } else if (addedEl.type === 'image-box') {
+              // Trigger file picker for image element
+              const fileInput = document.getElementById('elimg-' + addedEl.id);
+              if (fileInput) fileInput.click();
+            }
+            return;
+          }
+
           const config = AD_TYPES[currentType];
           if (!config) return;
 
@@ -7236,6 +7255,22 @@ ${dragScript}
         if (e.data && e.data.type === 'inline-edit-done') {
           const dragId = e.data.id;
           const newText = e.data.text;
+
+          // Check if this is an added element
+          const addedList = addedElements[currentType] || [];
+          const addedEl = addedList.find(el => el.id === dragId);
+          if (addedEl) {
+            pushUndo();
+            if (addedEl.type === 'price-tag') {
+              addedEl.config.price = newText;
+            } else {
+              addedEl.config.text = newText;
+            }
+            generatePreview();
+            renderElementsList();
+            return;
+          }
+
           const config = AD_TYPES[currentType];
           if (!config) return;
           const mapped = mapDragToField(dragId, config);
